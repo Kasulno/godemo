@@ -20,7 +20,7 @@ func GetNanoSecondTimeStamp() string {
 	return strconv.Itoa(int(ts))
 }
 
-func GetyyyymmddHHmmssTimeStamp() string {
+func GetyyyyMMddHHmmssTimeStamp() string {
 	now := time.Now()
 	return now.Format("20060102150405")
 }

@@ -14,7 +14,3 @@ func HmacSha256(msg string, sk string) string {
 	//sha := hex.EncodeToString(h.Sum(nil))
 	return base64.StdEncoding.EncodeToString([]byte(h.Sum(nil)))
 }
-
-func GetSign(sid string, rid string, ts string, sk string) string {
-	return HmacSha256(sid+rid+ts, sk)
-}

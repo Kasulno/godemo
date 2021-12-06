@@ -73,8 +73,3 @@ func generateKey(sk []byte) (genKey []byte) {
 	}
 	return genKey
 }
-
-func GetTrueAppSecret(appSecret string, sk string) string {
-	r, _ := AesDecryptECB(appSecret, []byte(sk))
-	return r
-}
