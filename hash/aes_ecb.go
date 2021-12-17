@@ -1,4 +1,4 @@
-package utils
+package hash
 
 import (
 	"crypto/aes"
@@ -8,12 +8,12 @@ import (
 )
 
 func AesEncryptECB(src []byte, sk []byte) (string, error) {
-	key, err := AesSha1prng(sk, 128) // 比示例一多出这一步
+	key, err := AesSha1prng(sk, 128)
 	if err != nil {
 		return "", err
 	}
 
-	cipher, _ := aes.NewCipher(generateKey(key))
+	cipher, _ := aes.NewCipher(generateAESKeyECB(key))
 	length := (len(src) + aes.BlockSize) / aes.BlockSize
 	plain := make([]byte, length*aes.BlockSize)
 	copy(plain, src)
@@ -36,7 +36,7 @@ func AesDecryptECB(msg string, sk []byte) (string, error) {
 		return "", err
 	}
 
-	cipher, _ := aes.NewCipher(generateKey(key))
+	cipher, _ := aes.NewCipher(generateAESKeyECB(key))
 	decrypted := make([]byte, len(encrypted))
 	for bs, be := 0, cipher.BlockSize(); bs < len(encrypted); bs, be = bs+cipher.BlockSize(), be+cipher.BlockSize() {
 		cipher.Decrypt(decrypted[bs:be], encrypted[bs:be])
@@ -63,7 +63,7 @@ func Sha1(data []byte) []byte {
 	return h.Sum(nil)
 }
 
-func generateKey(sk []byte) (genKey []byte) {
+func generateAESKeyECB(sk []byte) (genKey []byte) {
 	genKey = make([]byte, 16)
 	copy(genKey, sk)
 	for i := 16; i < len(sk); {
