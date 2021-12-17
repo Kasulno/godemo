@@ -1,4 +1,6 @@
 # README
+一些常用工具的Go实现
+
 > **hash**: 一些常见的加密解密算法的go实现
 >> **aes_ecb.go**: Java中AES SHA1PRNG加密解密的Go实现
 
