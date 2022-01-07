@@ -1,49 +1,12 @@
 package utils
 
 import (
-	"errors"
 	"strconv"
 	"time"
 )
 
 var weight = [17]int{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
 var valid_value = [11]byte{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'}
-var valid_province = map[string]string{
-	"11": "北京市",
-	"12": "天津市",
-	"13": "河北省",
-	"14": "山西省",
-	"15": "内蒙古自治区",
-	"21": "辽宁省",
-	"22": "吉林省",
-	"23": "黑龙江省",
-	"31": "上海市",
-	"32": "江苏省",
-	"33": "浙江省",
-	"34": "安徽省",
-	"35": "福建省",
-	"36": "山西省",
-	"37": "山东省",
-	"41": "河南省",
-	"42": "湖北省",
-	"43": "湖南省",
-	"44": "广东省",
-	"45": "广西壮族自治区",
-	"46": "海南省",
-	"50": "重庆市",
-	"51": "四川省",
-	"52": "贵州省",
-	"53": "云南省",
-	"54": "西藏自治区",
-	"61": "陕西省",
-	"62": "甘肃省",
-	"63": "青海省",
-	"64": "宁夏回族自治区",
-	"65": "新疆维吾尔自治区",
-	"71": "台湾省",
-	"81": "香港特别行政区",
-	"91": "澳门特别行政区",
-}
 
 // 效验18位身份证
 func IsValidCitizenNo18(citizenNo18 *[]byte) bool {
@@ -107,21 +70,6 @@ func CheckBirthdayValid(nYear, nMonth, nDay int) bool {
 	return true
 }
 
-// 省份号码效验
-func CheckProvinceValid(citizenNo []byte) bool {
-	provinceCode := make([]byte, 0)
-	provinceCode = append(provinceCode, citizenNo[:2]...)
-	provinceStr := string(provinceCode)
-
-	for i := range valid_province {
-		if provinceStr == i {
-			return true
-		}
-	}
-
-	return false
-}
-
 // 效验有效地身份证号码
 func IsValidCitizenNo(citizenNo *[]byte) bool {
 	if !IsValidCitizenNo18(citizenNo) {
@@ -141,10 +89,6 @@ func IsValidCitizenNo(citizenNo *[]byte) bool {
 		return false
 	}
 
-	if !CheckProvinceValid(*citizenNo) {
-		return false
-	}
-
 	nYear, _ := strconv.Atoi(string((*citizenNo)[6:10]))
 	nMonth, _ := strconv.Atoi(string((*citizenNo)[10:12]))
 	nDay, _ := strconv.Atoi(string((*citizenNo)[12:14]))
@@ -153,26 +97,4 @@ func IsValidCitizenNo(citizenNo *[]byte) bool {
 	}
 
 	return true
-}
-
-// 得到身份证号码，生日, 性别, 省份地址信息
-func GetCitizenNoInfo(citizenNo []byte) (err error, birthday time.Time, sex string, address string) {
-	err = nil
-	if !IsValidCitizenNo(&citizenNo) {
-		err = errors.New("不合法的身份证号码。")
-		return
-	}
-
-	birthday, _ = time.Parse("2006-01-02", string(citizenNo[6:10])+"-"+string(citizenNo[10:12])+"-"+string(citizenNo[12:14]))
-
-	genderMask, _ := strconv.Atoi(string(citizenNo[16]))
-	if genderMask%2 == 0 {
-		sex = "女"
-	} else {
-		sex = "男"
-	}
-
-	address = valid_province[string(citizenNo[:2])]
-
-	return
 }

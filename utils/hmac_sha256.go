@@ -1,4 +1,4 @@
-package hash
+package utils
 
 import (
 	"crypto/hmac"
@@ -12,5 +12,5 @@ func HmacSha256(msg string, sk string) string {
 	h.Write([]byte(msg))
 
 	//sha := hex.EncodeToString(h.Sum(nil))
-	return base64.StdEncoding.EncodeToString([]byte(h.Sum(nil)))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }

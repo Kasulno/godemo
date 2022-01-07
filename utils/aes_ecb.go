@@ -1,4 +1,4 @@
-package hash
+package utils
 
 import (
 	"crypto/aes"
@@ -6,6 +6,34 @@ import (
 	"encoding/base64"
 	"errors"
 )
+
+func Sha1(data []byte) []byte {
+	h := sha1.New()
+	h.Write(data)
+	return h.Sum(nil)
+}
+
+func AesSha1prng(sk []byte, encryptLength int) ([]byte, error) {
+	hashs := Sha1(Sha1(sk))
+	maxLen := len(hashs)
+	realLen := encryptLength / 8
+	if realLen > maxLen {
+		return nil, errors.New("invalid length!")
+	}
+
+	return hashs[0:realLen], nil
+}
+
+func generateAESKeyECB(sk []byte) (genKey []byte) {
+	genKey = make([]byte, 16)
+	copy(genKey, sk)
+	for i := 16; i < len(sk); {
+		for j := 0; j < 16 && i < len(sk); j, i = j+1, i+1 {
+			genKey[j] ^= sk[i]
+		}
+	}
+	return genKey
+}
 
 func AesEncryptECB(src []byte, sk []byte) (string, error) {
 	key, err := AesSha1prng(sk, 128)
@@ -44,32 +72,4 @@ func AesDecryptECB(msg string, sk []byte) (string, error) {
 	trim := len(decrypted) - int(decrypted[len(decrypted)-1])
 
 	return string(decrypted[0:trim]), nil
-}
-
-func AesSha1prng(sk []byte, encryptLength int) ([]byte, error) {
-	hashs := Sha1(Sha1(sk))
-	maxLen := len(hashs)
-	realLen := encryptLength / 8
-	if realLen > maxLen {
-		return nil, errors.New("invalid length!")
-	}
-
-	return hashs[0:realLen], nil
-}
-
-func Sha1(data []byte) []byte {
-	h := sha1.New()
-	h.Write(data)
-	return h.Sum(nil)
-}
-
-func generateAESKeyECB(sk []byte) (genKey []byte) {
-	genKey = make([]byte, 16)
-	copy(genKey, sk)
-	for i := 16; i < len(sk); {
-		for j := 0; j < 16 && i < len(sk); j, i = j+1, i+1 {
-			genKey[j] ^= sk[i]
-		}
-	}
-	return genKey
 }
